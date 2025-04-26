@@ -21,19 +21,20 @@ export default function TruthTableGenerator() {
   const titleY = useTransform(scrollYProgress, [0, 0.5], [0, -100])
   const titleOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
 
-  const operators = [
-    { label: "ADD variable", value: "", special: true },
-    { label: "AND", value: "∧" },
-    { label: "OR", value: "∨" },
-    { label: "NOT", value: "~" },
-    { label: "XOR", value: "⊕" },
-    { label: "SYM DIFF", value: "△" },
-    { label: "(", value: "(" },
-    { label: ")", value: ")" },
-    { label: "Clear", value: "", special: true },
-    { label: "Backspace", value: "", special: true }, 
-    { label: "Enter", value: "", special: true },
-  ]
+  const [operators, setOperators] = useState([
+  { label: "ADD variable", value: "", special: true },
+  { label: "AND", value: "∧" },
+  { label: "OR", value: "∨" },
+  { label: "NOT", value: "~" },
+  { label: "XOR", value: "⊕" },
+  { label: "SYM DIFF", value: "△" },
+  { label: "(", value: "(" },
+  { label: ")", value: ")" },
+  { label: "Clear", value: "", special: true },
+  { label: "Backspace", value: "", special: true }, 
+  { label: "Enter", value: "", special: true },
+])
+
 
   const handleKeyClick = (op: any) => {
     if (op.special) {
@@ -116,10 +117,10 @@ export default function TruthTableGenerator() {
 
     // Process parentheses
     while (processedExpr.includes("(")) {
-      processedExpr = processedExpr.replace(/$$([TF∧∨⊕△]+)$$/g, (match, group) => {
-        return evaluateSimpleExpression(group) ? "T" : "F"
-      })
-    }
+  processedExpr = processedExpr.replace(/\(([^()]+)\)/g, (match, group) => {
+    return evaluateSimpleExpression(group) ? "T" : "F"
+  })
+}
 
     return evaluateSimpleExpression(processedExpr)
   }
@@ -217,6 +218,17 @@ export default function TruthTableGenerator() {
 
           {/* Keyboard */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-12">
+            {/* Dynamic Variable Buttons */}
+              {variables.map((v, index) => (
+                <Button
+                  key={`var-${index}`}
+                  variant="outline"
+                  className="text-lg py-6 bg-teal-600 hover:bg-teal-700 text-white"
+                  onClick={() => setExpression((prev) => prev + v)}
+                  >
+                    {v}
+                    </Button>
+            ))}
             {operators.map((op, index) => (
               <Button
                 key={index}
