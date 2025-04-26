@@ -31,6 +31,7 @@ export default function TruthTableGenerator() {
     { label: "(", value: "(" },
     { label: ")", value: ")" },
     { label: "Clear", value: "", special: true },
+    { label: "Backspace", value: "", special: true }, 
     { label: "Enter", value: "", special: true },
   ]
 
@@ -48,7 +49,13 @@ export default function TruthTableGenerator() {
       } else if (op.label === "Clear") {
         setExpression("")
         setTruthTable([])
-      } else if (op.label === "Enter") {
+        setVariables([])
+        setVarCounter(1)
+      } 
+      else if (op.label === "Backspace") {
+      setExpression((prev) => prev.slice(0, -1))
+      }
+      else if (op.label === "Enter") {
         generateTruthTable()
       }
     } else {
@@ -156,7 +163,7 @@ export default function TruthTableGenerator() {
         className="h-screen flex flex-col items-center justify-center relative overflow-hidden"
         style={{ y: titleY, opacity: titleOpacity }}
       >
-        <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 w-full h-full opacity-10 z-0">
           <MathSymbolsBackground />
         </div>
 
@@ -186,14 +193,14 @@ export default function TruthTableGenerator() {
 
       {/* Interactive Keyboard Section */}
       <div className="min-h-screen py-20 px-4 md:px-8">
+        <div className="max-w-4xl mx-auto">
         <div className="absolute inset-0 opacity-10">
           <MathSymbolsBackground />
         </div>
-        <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-8 text-center">Truth Table Generator</h2>
 
           {/* Expression Display */}
-          <Card className="p-6 mb-8 bg-slate-800 border-slate-700">
+          <Card className="p-6 mb-8 bg-slate-800 border-slate-700 z-1">
             <div className="text-2xl font-mono min-h-16 mb-4 p-4 bg-slate-900 rounded-md overflow-x-auto whitespace-nowrap">
               {expression || <span className="text-slate-500">Enter a logical expression...</span>}
             </div>
@@ -219,7 +226,11 @@ export default function TruthTableGenerator() {
                     ? "bg-emerald-600 hover:bg-emerald-700 text-white col-span-2 sm:col-span-1"
                     : op.label === "Clear"
                       ? "bg-red-600 hover:bg-red-700 text-white"
-                      : "border-slate-700 bg-slate-800 hover:bg-slate-700"
+                    : op.label === "ADD variable"
+                      ? "bg-blue-300 text-white"
+                    : op.label === "Backspace" 
+                      ? "bg-black hover:bg-gray-800 text-white" 
+                    : "border-slate-700 bg-slate-800 hover:bg-slate-700"
                 }`}
                 onClick={() => handleKeyClick(op)}
               >
@@ -270,7 +281,7 @@ function MathSymbolsBackground() {
   const symbols = ["∧", "∨", "⊕", "~", "△", "→", "↔", "⊤", "⊥", "≡", "≠", "∀", "∃", "∈", "∉", "⊆", "⊇", "∪", "∩", "¬"]
 
   return (
-    <div className="w-full h-full relative">
+    <div className=" absolute inset-0 w-full h-full">
       {Array.from({ length: 100 }).map((_, i) => {
         const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)]
         const x = Math.random() * 100
